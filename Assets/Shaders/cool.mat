@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: cool
-  m_Shader: {fileID: 4800000, guid: 0e10ca392dbf7b346a3e26487f81938e, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 15eeaadaff03c254fbabcefb45787e94, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
