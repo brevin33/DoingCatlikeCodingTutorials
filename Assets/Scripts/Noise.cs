@@ -11,6 +11,7 @@ public static partial class Noise
     struct LatticeSpan4
     {
         public int4 p0, p1;
+        public float4 g0, g1;
         public float4 t;
     }
 
@@ -22,6 +23,8 @@ public static partial class Noise
         span.p1 = span.p0 + 1;
         span.t = coordinates - points;
         span.t = span.t * span.t * span.t * (span.t * (span.t * 6f - 15f) + 10f);
+        span.g0 = coordinates - span.p0;
+        span.g1 = span.g0 - 1f;
         return span;
     }
     public interface INoise

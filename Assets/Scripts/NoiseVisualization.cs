@@ -7,7 +7,6 @@ using static Noise;
 using static Shapes;
 
 //using static Unity.Mathematics.math;
-
 public class NoiseVisualization : Visualization
 {
 
@@ -17,13 +16,25 @@ public class NoiseVisualization : Visualization
     [SerializeField]
     int seed;
 
+    public enum NoiseType { Perlin, Value }
+
+    [SerializeField]
+    NoiseType type;
+
     [SerializeField, Range(1, 3)]
     int dimensions = 3;
 
-    static Noise.ScheduleDelegate[] noiseJobs = {
-        Noise.Job<Lattice1D>.ScheduleParallel,
-        Noise.Job<Lattice2D>.ScheduleParallel,
-        Noise.Job<Lattice3D>.ScheduleParallel
+    static Noise.ScheduleDelegate[,] noiseJobs = {
+        {
+            Noise.Job<Lattice1D<Perlin>>.ScheduleParallel,
+            Noise.Job < Lattice2D < Perlin > >.ScheduleParallel,
+            Noise.Job < Lattice3D < Perlin > >.ScheduleParallel
+        },
+        {
+            Noise.Job<Lattice1D<Value>>.ScheduleParallel,
+            Noise.Job < Lattice2D < Value > >.ScheduleParallel, 
+            Noise.Job < Lattice3D < Value > >.ScheduleParallel
+        }
     };
 
     [SerializeField]
@@ -56,7 +67,7 @@ public class NoiseVisualization : Visualization
         NativeArray<float3x4> positions, int resolution, JobHandle handle
     )
     {
-        noiseJobs[dimensions - 1](
+        noiseJobs[(int)type, dimensions - 1](
             positions, noise, seed, domain, resolution, handle
         ).Complete();
         noiseBuffer.SetData(noise.Reinterpret<float>(4 * 4));

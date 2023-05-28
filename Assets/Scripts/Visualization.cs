@@ -39,7 +39,7 @@ public abstract class Visualization : MonoBehaviour
     [SerializeField]
     Shape shape;
 
-    [SerializeField, Range(0.1f, 40f)]
+    [SerializeField, Range(0.1f, 200f)]
     float instanceScale = 8f;
 
     [SerializeField, Range(1, 512)]
