@@ -6,35 +6,42 @@ using static Shapes;
 using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine.UIElements;
+using static Noise.LatticeSpan4;
 
 public static partial class Noise
 {
 
-    public struct Lattice1D<G> : INoise where G : struct, IGradient
+
+
+    public struct Lattice1D<L, G> : INoise
+        where L : struct, ILattice where G : struct, IGradient
     {
 
-        public float4 GetNoise4(float4x3 positions, SmallXXHash4 hash)
+        public float4 GetNoise4(float4x3 positions, SmallXXHash4 hash, int frequency)
         {
-            LatticeSpan4 x = GetLatticeSpan4(positions.c0);
+            LatticeSpan4 x = default(L).GetLatticeSpan4(positions.c0, frequency);
+
 
             var g = default(G);
-            return lerp(
+            return g.EvaluateAfterInterpolation(lerp(
                 g.Evaluate(hash.Eat(x.p0), x.g0), g.Evaluate(hash.Eat(x.p1), x.g1), x.t
-            );
+            ));
         }
     }
 
-    public struct Lattice2D<G> : INoise where G : struct, IGradient
+    public struct Lattice2D<L, G> : INoise
+        where L : struct, ILattice where G : struct, IGradient
     {
 
-        public float4 GetNoise4(float4x3 positions, SmallXXHash4 hash)
+        public float4 GetNoise4(float4x3 positions, SmallXXHash4 hash, int frequency)
         {
+            var l = default(L);
             LatticeSpan4
-            x = GetLatticeSpan4(positions.c0), z = GetLatticeSpan4(positions.c2);
+            x = l.GetLatticeSpan4(positions.c0, frequency), z = l.GetLatticeSpan4(positions.c2, frequency);
             SmallXXHash4 h0 = hash.Eat(x.p0), h1 = hash.Eat(x.p1);
 
             var g = default(G);
-            return lerp(
+            return g.EvaluateAfterInterpolation(lerp(
                 lerp(
                     g.Evaluate(h0.Eat(z.p0), x.g0, z.g0),
                     g.Evaluate(h0.Eat(z.p1), x.g0, z.g1),
@@ -46,19 +53,21 @@ public static partial class Noise
                     z.t
                 ),
                 x.t
-            );
+            ));
         }
     }
 
-    public struct Lattice3D<G> : INoise where G : struct, IGradient
+    public struct Lattice3D<L, G> : INoise
+        where L : struct, ILattice where G : struct, IGradient
     {
 
-        public float4 GetNoise4(float4x3 positions, SmallXXHash4 hash)
+        public float4 GetNoise4(float4x3 positions, SmallXXHash4 hash, int frequency)
         {
+            var l = default(L);
             LatticeSpan4
-            x = GetLatticeSpan4(positions.c0),
-            y = GetLatticeSpan4(positions.c1),
-            z = GetLatticeSpan4(positions.c2);
+            x = l.GetLatticeSpan4(positions.c0, frequency),
+            y = l.GetLatticeSpan4(positions.c1, frequency),
+            z = l.GetLatticeSpan4(positions.c2, frequency);
 
             SmallXXHash4
                 h0 = hash.Eat(x.p0), h1 = hash.Eat(x.p1),
@@ -66,7 +75,7 @@ public static partial class Noise
                 h10 = h1.Eat(y.p0), h11 = h1.Eat(y.p1);
 
             var g = default(G);
-            return lerp(
+            return g.EvaluateAfterInterpolation(lerp(
                 lerp(
                     lerp(
                         g.Evaluate(h00.Eat(z.p0), x.g0, y.g0, z.g0),
@@ -94,7 +103,7 @@ public static partial class Noise
                     y.t
                 ),
                 x.t
-            );
+            ));
         }
     }
 

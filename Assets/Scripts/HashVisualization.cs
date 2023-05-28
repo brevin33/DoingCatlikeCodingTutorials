@@ -93,6 +93,9 @@ public readonly struct SmallXXHash4
 
     readonly uint4 accumulator;
 
+    public static SmallXXHash4 operator +(SmallXXHash4 h, int v) =>
+    h.accumulator + (uint)v;
+
     public SmallXXHash4(uint4 accumulator)
     {
         this.accumulator = accumulator;
