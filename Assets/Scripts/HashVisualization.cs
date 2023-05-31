@@ -79,6 +79,11 @@ public readonly struct SmallXXHash4
     const uint primeD = 0b00100111110101001110101100101111;
     const uint primeE = 0b00010110010101100110011110110001;
 
+    public uint4 GetBits(int count, int shift) =>
+    ((uint4)this >> shift) & (uint)((1 << count) - 1);
+
+    public float4 GetBitsAsFloats01(int count, int shift) =>
+    (float4)GetBits(count, shift) * (1f / ((1 << count) - 1));
     public uint4 BytesA => (uint4)this & 255;
     public uint4 BytesB => ((uint4)this >> 8) & 255;
 
