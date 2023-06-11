@@ -21,6 +21,7 @@ public class NoiseVisualization : Visualization
     public enum NoiseType
     {
         Perlin, PerlinTurbulence, Value, ValueTurbulence,
+        SimplexValue, SimplexValueTurbulence,
         VoronoiWorleyF1, VoronoiWorleyF2, VoronoiWorleyF2MinusF1,
         VoronoiChebyshevF1, VoronoiChebyshevF2, VoronoiChebyshevF2MinusF1
     }
@@ -69,6 +70,22 @@ public class NoiseVisualization : Visualization
                 Noise.Job<Lattice3D<LatticeTiling,Turbulence<Value>>>.ScheduleParallel
         }
         ,
+        {
+            Noise.Job<Simplex1D<Value>>.ScheduleParallel,
+            Noise.Job<Simplex1D<Value>>.ScheduleParallel,
+            Noise.Job < Simplex2D < Value > >.ScheduleParallel,
+            Noise.Job < Simplex2D < Value > >.ScheduleParallel,
+            Noise.Job < Simplex3D < Value > >.ScheduleParallel,
+            Noise.Job < Simplex3D < Value > >.ScheduleParallel
+        },
+        {
+            Noise.Job<Simplex1D<Turbulence<Value>>>.ScheduleParallel,
+            Noise.Job < Simplex1D < Turbulence < Value > > >.ScheduleParallel,
+            Noise.Job < Simplex2D < Turbulence < Value > > >.ScheduleParallel,
+            Noise.Job < Simplex2D < Turbulence < Value > > >.ScheduleParallel,
+            Noise.Job < Simplex3D < Turbulence < Value > > >.ScheduleParallel,
+            Noise.Job < Simplex3D < Turbulence < Value > > >.ScheduleParallel
+        },
         {
             Noise.Job<Voronoi1D< LatticeNormal, Worley, F1 >>.ScheduleParallel,
             Noise.Job<Voronoi1D< LatticeTiling, Worley, F1 >>.ScheduleParallel,
@@ -119,7 +136,7 @@ public class NoiseVisualization : Visualization
             Noise.Job<Voronoi2D< LatticeTiling, Chebyshev, F2MinusF1 >>.ScheduleParallel,
             Noise.Job<Voronoi3D< LatticeNormal, Chebyshev, F2MinusF1 >>.ScheduleParallel,
             Noise.Job<Voronoi3D< LatticeTiling, Chebyshev, F2MinusF1 >>.ScheduleParallel
-        }
+        },
     };
 
     [SerializeField]
