@@ -11,6 +11,7 @@ namespace ProceduralMeshes
         where G : struct, IMeshGenerator
         where S : struct, IMeshStreams
     {
+
         G generator;
 
         [WriteOnly]
@@ -30,7 +31,13 @@ namespace ProceduralMeshes
                 job.generator.VertexCount,
                 job.generator.IndexCount
             );
-            return job.ScheduleParallel(job.generator.JobLength, 1, dependency);
+            return job.ScheduleParallel(
+                job.generator.JobLength, 1, dependency
+            );
         }
     }
+
+    public delegate JobHandle MeshJobScheduleDelegate(
+        Mesh mesh, Mesh.MeshData meshData, int resolution, JobHandle dependency
+    );
 }
