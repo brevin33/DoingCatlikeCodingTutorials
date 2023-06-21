@@ -7,6 +7,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using UnityEngine.UIElements;
 using static Noise.LatticeSpan4;
+using System.Runtime.CompilerServices;
 
 public static partial class Noise
 {
@@ -16,7 +17,7 @@ public static partial class Noise
     public struct Lattice1D<L, G> : INoise
         where L : struct, ILattice where G : struct, IGradient
     {
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float4 GetNoise4(float4x3 positions, SmallXXHash4 hash, int frequency)
         {
             LatticeSpan4 x = default(L).GetLatticeSpan4(positions.c0, frequency);
@@ -32,7 +33,7 @@ public static partial class Noise
     public struct Lattice2D<L, G> : INoise
         where L : struct, ILattice where G : struct, IGradient
     {
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float4 GetNoise4(float4x3 positions, SmallXXHash4 hash, int frequency)
         {
             var l = default(L);
@@ -60,7 +61,7 @@ public static partial class Noise
     public struct Lattice3D<L, G> : INoise
         where L : struct, ILattice where G : struct, IGradient
     {
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float4 GetNoise4(float4x3 positions, SmallXXHash4 hash, int frequency)
         {
             var l = default(L);
