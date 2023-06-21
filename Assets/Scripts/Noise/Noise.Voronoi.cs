@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 
 using static Unity.Mathematics.math;
@@ -23,7 +24,7 @@ public static partial class Noise
         where D : struct, IVoronoiDistance
         where F : struct, IVoronoiFunction
     {
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float4 GetNoise4(float4x3 positions, SmallXXHash4 hash, int frequency)
         {
             var l = default(L);
@@ -45,7 +46,7 @@ public static partial class Noise
         where D : struct, IVoronoiDistance
         where F : struct, IVoronoiFunction
     {
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float4 GetNoise4(float4x3 positions, SmallXXHash4 hash, int frequency)
         {
             var l = default(L);
@@ -80,7 +81,7 @@ public static partial class Noise
         where D : struct, IVoronoiDistance
         where F : struct, IVoronoiFunction
     {
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float4 GetNoise4(float4x3 positions, SmallXXHash4 hash, int frequency)
         {
             var l = default(L);

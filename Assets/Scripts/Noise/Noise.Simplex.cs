@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Unity.Mathematics;
 
 using static Unity.Mathematics.math;
@@ -7,6 +8,7 @@ public static partial class Noise
 
     public struct Simplex1D<G> : INoise where G : struct, IGradient
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float4 GetNoise4(float4x3 positions, SmallXXHash4 hash, int frequency)
         {
             positions *= frequency;
@@ -28,7 +30,7 @@ public static partial class Noise
 
     public struct Simplex2D<G> : INoise where G : struct, IGradient
     {
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float4 GetNoise4(float4x3 positions, SmallXXHash4 hash, int frequency)
         {
             positions *= frequency;
@@ -62,7 +64,7 @@ public static partial class Noise
 
     public struct Simplex3D<G> : INoise where G : struct, IGradient
     {
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float4 GetNoise4(float4x3 positions, SmallXXHash4 hash, int frequency)
         {
             positions *= frequency * 0.6f;
