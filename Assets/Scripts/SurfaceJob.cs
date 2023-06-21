@@ -9,10 +9,14 @@ using static Unity.Mathematics.math;
 
 using ProceduralMeshes.Streams;
 
+public delegate JobHandle SurfaceJobScheduleDelegate(
+Mesh.MeshData meshData, int resolution, Settings settings, SpaceTRS domain,
+float displacement, JobHandle dependency
+);
+
 [BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
 public struct SurfaceJob<N> : IJobFor where N : struct, INoise
 {
-
     struct Vertex4
     {
         public SingleStream.Stream0 v0, v1, v2, v3;
@@ -22,33 +26,43 @@ public struct SurfaceJob<N> : IJobFor where N : struct, INoise
 
     float displacement;
 
+    float3x3 derivativeMatrix;
+
     NativeArray<Vertex4> vertices;
 
     float3x4 domainTRS;
     public void Execute(int i)
     {
         Vertex4 v = vertices[i];
-        float4x3 p = domainTRS.TransformVectors(transpose(float3x4(
-            v.v0.position, v.v1.position, v.v2.position, v.v3.position
-        )));
-        var hash = SmallXXHash4.Seed(settings.seed);
-        int frequency = settings.frequency;
-        float amplitude = 1f, amplitudeSum = 0f;
-        float4 sum = 0f;
+        Sample4 noise = Noise.Job<N>.GetFractalNoise<N>(
+            domainTRS.TransformVectors(transpose(float3x4(
+                v.v0.position, v.v1.position, v.v2.position, v.v3.position
+            ))),
+            settings
+        ) * displacement;
 
-        for (int o = 0; o < settings.octaves; o++)
-        {
-            sum += amplitude * default(N).GetNoise4(p, hash + o, frequency);
-            amplitudeSum += amplitude;
-            frequency *= settings.lacunarity;
-            amplitude *= settings.persistence;
-        }
-        float4 noise = sum / amplitudeSum;
-        noise *= displacement;
-        v.v0.position.y = noise.x;
-        v.v1.position.y = noise.y;
-        v.v2.position.y = noise.z;
-        v.v3.position.y = noise.w;
+        v.v0.position.y = noise.v.x;
+        v.v1.position.y = noise.v.y;
+        v.v2.position.y = noise.v.z;
+        v.v3.position.y = noise.v.w;
+        float4x3 dNoise =
+            derivativeMatrix.TransformVectors(noise.Derivatives);
+
+        float4 normalizer = rsqrt(dNoise.c0 * dNoise.c0 + 1f);
+        float4 tangentY = dNoise.c0 * normalizer;
+        v.v0.tangent = float4(normalizer.x, tangentY.x, 0f, -1f);
+        v.v1.tangent = float4(normalizer.y, tangentY.y, 0f, -1f);
+        v.v2.tangent = float4(normalizer.z, tangentY.z, 0f, -1f);
+        v.v3.tangent = float4(normalizer.w, tangentY.w, 0f, -1f);
+
+        normalizer = rsqrt(dNoise.c0 * dNoise.c0 + dNoise.c2 * dNoise.c2 + 1f);
+        float4 normalX = -dNoise.c0 * normalizer;
+        float4 normalZ = -dNoise.c2 * normalizer;
+        v.v0.normal = float3(normalX.x, normalizer.x, normalZ.x);
+        v.v1.normal = float3(normalX.y, normalizer.y, normalZ.y);
+        v.v2.normal = float3(normalX.z, normalizer.z, normalZ.z);
+        v.v3.normal = float3(normalX.w, normalizer.w, normalZ.w);
+
         vertices[i] = v;
     }
 
@@ -62,6 +76,7 @@ public struct SurfaceJob<N> : IJobFor where N : struct, INoise
             meshData.GetVertexData<SingleStream.Stream0>().Reinterpret<Vertex4>(12 * 4),
         settings = settings,
         domainTRS = domain.Matrix,
+        derivativeMatrix = domain.DerivativeMatrix,
         displacement = displacement
     }.ScheduleParallel(meshData.vertexCount / 4, resolution, dependency);
 }

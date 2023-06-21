@@ -1,17 +1,19 @@
 using ProceduralMeshes;
 using ProceduralMeshes.Generators;
 using ProceduralMeshes.Streams;
-using Unity.Jobs;
+using ProceduralMeshes;
+using ProceduralMeshes.Generators;
+using ProceduralMeshes.Streams;
 using UnityEngine;
 using UnityEngine.Rendering;
+
 using static Noise;
-using static Noise.LatticeSpan4;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class ProceduralSurface : MonoBehaviour
 {
 
-    static AdvancedMeshJobScheduleDelegate[] jobs = {
+    static AdvancedMeshJobScheduleDelegate[] meshJobs = {
         MeshJob<SquareGrid, SingleStream>.ScheduleParallel,
         MeshJob<SharedSquareGrid, SingleStream>.ScheduleParallel,
         MeshJob<SharedTriangleGrid, SingleStream>.ScheduleParallel,
@@ -21,6 +23,35 @@ public class ProceduralSurface : MonoBehaviour
         MeshJob<CubeSphere, SingleStream>.ScheduleParallel,
         MeshJob<SharedCubeSphere, SingleStream>.ScheduleParallel,
     };
+
+    static SurfaceJobScheduleDelegate[,] surfaceJobs = {
+        {
+            SurfaceJob<Simplex1D<Simplex>>.ScheduleParallel,
+            SurfaceJob<Simplex2D<Simplex>>.ScheduleParallel,
+            SurfaceJob<Simplex3D<Simplex>>.ScheduleParallel
+        },
+        {
+            SurfaceJob<Simplex1D<Smoothstep<Turbulence<Simplex>>>>.ScheduleParallel,
+            SurfaceJob<Simplex2D<Smoothstep<Turbulence<Simplex>>>>.ScheduleParallel,
+            SurfaceJob<Simplex3D<Smoothstep<Turbulence<Simplex>>>>.ScheduleParallel
+        },
+        {
+            SurfaceJob<Simplex1D<Value>>.ScheduleParallel,
+            SurfaceJob<Simplex2D<Value>>.ScheduleParallel,
+            SurfaceJob<Simplex3D<Value>>.ScheduleParallel
+        }
+    };
+
+    public enum NoiseType
+    {
+        Simplex, SimplexSmoothTurbulence, SimplexValue
+    }
+
+    [SerializeField]
+    NoiseType noiseType;
+
+    [SerializeField, Range(1, 3)]
+    int dimensions = 1;
 
     public enum MeshType
     {
@@ -192,16 +223,14 @@ public class ProceduralSurface : MonoBehaviour
         Mesh.MeshDataArray meshDataArray = Mesh.AllocateWritableMeshData(1);
         Mesh.MeshData meshData = meshDataArray[0];
 
-        SurfaceJob<Lattice2D<LatticeNormal, Perlin>>.ScheduleParallel(
+        surfaceJobs[(int)noiseType, dimensions - 1](
             meshData, resolution, noiseSettings, domain, displacement,
-            jobs[(int)meshType](
+            meshJobs[(int)meshType](
                 mesh, meshData, resolution, default,
                 new Vector3(0f, Mathf.Abs(displacement)), true
             )
         ).Complete();
         Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, mesh);
-        mesh.RecalculateNormals();
-        mesh.RecalculateTangents();
 
         if (meshOptimization == MeshOptimizationMode.ReorderIndices)
         {
