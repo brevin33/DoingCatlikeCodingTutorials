@@ -1,9 +1,6 @@
 using ProceduralMeshes;
 using ProceduralMeshes.Generators;
 using ProceduralMeshes.Streams;
-using ProceduralMeshes;
-using ProceduralMeshes.Generators;
-using ProceduralMeshes.Streams;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -19,10 +16,20 @@ public class ProceduralSurface : MonoBehaviour
         MeshJob<SharedTriangleGrid, SingleStream>.ScheduleParallel,
         MeshJob<FlatHexagonGrid, SingleStream>.ScheduleParallel,
         MeshJob<PointyHexagonGrid, SingleStream>.ScheduleParallel,
-        MeshJob<UVSphere, SingleStream>.ScheduleParallel,
         MeshJob<CubeSphere, SingleStream>.ScheduleParallel,
         MeshJob<SharedCubeSphere, SingleStream>.ScheduleParallel,
+        MeshJob<UVSphere, SingleStream>.ScheduleParallel
     };
+
+    public enum MeshType
+    {
+        SquareGrid, SharedSquareGrid, SharedTriangleGrid,
+        FlatHexagonGrid, PointyHexagonGrid, CubeSphere, SharedCubeSphere,
+        UVSphere
+    };
+
+    [SerializeField]
+    MeshType meshType;
 
     static SurfaceJobScheduleDelegate[,] surfaceJobs = {
         {
@@ -53,29 +60,8 @@ public class ProceduralSurface : MonoBehaviour
     [SerializeField, Range(1, 3)]
     int dimensions = 1;
 
-    public enum MeshType
-    {
-        SquareGrid, SharedSquareGrid, SharedTriangleGrid,
-        FlatHexagonGrid, PointyHexagonGrid, UVSphere, CubeSphere, SharedCubeSphere
-    };
-
     [SerializeField]
-    Settings noiseSettings = Settings.Default;
-
-    [SerializeField]
-    SpaceTRS domain = new SpaceTRS
-    {
-        scale = 1f
-    };
-
-    [SerializeField]
-    MeshType meshType;
-
-    [SerializeField, Range(1, 50)]
-    int resolution = 1;
-
-    [System.NonSerialized]
-    int[] triangles;
+    bool recalculateNormals, recalculateTangents;
 
     [System.Flags]
     public enum MeshOptimizationMode
@@ -86,6 +72,20 @@ public class ProceduralSurface : MonoBehaviour
     [SerializeField]
     MeshOptimizationMode meshOptimization;
 
+    [SerializeField, Range(1, 50)]
+    int resolution = 1;
+
+    [SerializeField, Range(-1f, 1f)]
+    float displacement = 0.5f;
+
+    [SerializeField]
+    Settings noiseSettings = Settings.Default;
+
+    [SerializeField]
+    SpaceTRS domain = new SpaceTRS
+    {
+        scale = 1f
+    };
 
     [System.Flags]
     public enum GizmoMode
@@ -98,7 +98,6 @@ public class ProceduralSurface : MonoBehaviour
 
     public enum MaterialMode { Displacement, Flat, LatLonMap, CubeMap }
 
-
     [SerializeField]
     MaterialMode material;
 
@@ -109,11 +108,12 @@ public class ProceduralSurface : MonoBehaviour
 
     [System.NonSerialized]
     Vector3[] vertices, normals;
+
     [System.NonSerialized]
     Vector4[] tangents;
 
-    [SerializeField, Range(-1f, 1f)]
-    float displacement = 0.5f;
+    [System.NonSerialized]
+    int[] triangles;
 
     void Awake()
     {
@@ -135,7 +135,6 @@ public class ProceduralSurface : MonoBehaviour
         bool drawNormals = (gizmos & GizmoMode.Normals) != 0;
         bool drawTangents = (gizmos & GizmoMode.Tangents) != 0;
         bool drawTriangles = (gizmos & GizmoMode.Triangles) != 0;
-
 
         if (vertices == null)
         {
@@ -182,6 +181,7 @@ public class ProceduralSurface : MonoBehaviour
                 Gizmos.DrawRay(position, t.TransformDirection(tangents[i]) * 0.2f);
             }
         }
+
         if (drawTriangles)
         {
             float colorStep = 1f / (triangles.Length - 3);
@@ -199,7 +199,6 @@ public class ProceduralSurface : MonoBehaviour
                 );
             }
         }
-
     }
 
     void OnValidate() => enabled = true;
@@ -213,7 +212,6 @@ public class ProceduralSurface : MonoBehaviour
         normals = null;
         tangents = null;
         triangles = null;
-
 
         GetComponent<MeshRenderer>().material = materials[(int)material];
     }
@@ -230,7 +228,17 @@ public class ProceduralSurface : MonoBehaviour
                 new Vector3(0f, Mathf.Abs(displacement)), true
             )
         ).Complete();
+
         Mesh.ApplyAndDisposeWritableMeshData(meshDataArray, mesh);
+
+        if (recalculateNormals)
+        {
+            mesh.RecalculateNormals();
+        }
+        if (recalculateTangents)
+        {
+            mesh.RecalculateTangents();
+        }
 
         if (meshOptimization == MeshOptimizationMode.ReorderIndices)
         {

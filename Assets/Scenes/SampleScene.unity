@@ -432,9 +432,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d54f2938dab1b294d8a7d4c78a350be0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  meshType: 1
+  noiseType: 2
+  dimensions: 1
+  recalculateNormals: 0
+  recalculateTangents: 0
+  meshOptimization: 0
+  resolution: 20
+  displacement: 0.2
   noiseSettings:
     seed: 0
-    frequency: 4
+    frequency: 1
     octaves: 1
     lacunarity: 2
     persistence: 0.5
@@ -451,17 +459,13 @@ MonoBehaviour:
       x: 1
       y: 1
       z: 1
-  meshType: 0
-  resolution: 50
-  meshOptimization: -1
-  gizmos: 0
+  gizmos: 6
   material: 0
   materials:
   - {fileID: 2100000, guid: 2909ae6487c7089449cb5163661bd7ae, type: 2}
   - {fileID: 2100000, guid: 72087d9191d45284cbacff51b0b31ce8, type: 2}
   - {fileID: 2100000, guid: f98acc36e13254e43bf5642dd5df9155, type: 2}
   - {fileID: 2100000, guid: 6709bd52c1ee9b340af79cb6efc13f7d, type: 2}
-  displacement: 0.5
 --- !u!23 &450110154
 MeshRenderer:
   m_ObjectHideFlags: 0

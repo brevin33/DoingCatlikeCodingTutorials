@@ -71,7 +71,25 @@ public static partial class Noise
     }
 
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Sample4 GetFractalNoise<N>(
+        float4x3 position, Settings settings
+    ) where N : struct, INoise
+    {
+        var hash = SmallXXHash4.Seed(settings.seed);
+        int frequency = settings.frequency;
+        float amplitude = 1f, amplitudeSum = 0f;
+        Sample4 sum = default;
 
+        for (int o = 0; o < settings.octaves; o++)
+        {
+            sum += amplitude * default(N).GetNoise4(position, hash + o, frequency);
+            amplitudeSum += amplitude;
+            frequency *= settings.lacunarity;
+            amplitude *= settings.persistence;
+        }
+        return sum / amplitudeSum;
+    }
 
     public interface INoise
     {
@@ -96,25 +114,6 @@ public static partial class Noise
     domainTRS.TransformVectors(transpose(positions[i])), settings
 ).v;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Sample4 GetFractalNoise<N>(
-            float4x3 position, Settings settings
-            ) where N : struct, INoise
-        {
-            var hash = SmallXXHash4.Seed(settings.seed);
-            int frequency = settings.frequency;
-            float amplitude = 1f, amplitudeSum = 0f;
-            Sample4 sum = default;
-
-            for (int o = 0; o < settings.octaves; o++)
-            {
-                sum += amplitude * default(N).GetNoise4(position, hash + o, frequency).v;
-                frequency *= settings.lacunarity;
-                amplitude *= settings.persistence;
-                amplitudeSum += amplitude;
-            }
-            return sum / amplitudeSum;
-        }
 
         public static JobHandle ScheduleParallel(
             NativeArray<float3x4> positions, NativeArray<float4> noise, //int seed,
