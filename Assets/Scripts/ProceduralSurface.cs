@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 
 using static Noise;
+using static Noise.LatticeSpan4;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class ProceduralSurface : MonoBehaviour
@@ -33,6 +34,22 @@ public class ProceduralSurface : MonoBehaviour
 
     static SurfaceJobScheduleDelegate[,] surfaceJobs = {
         {
+            SurfaceJob<Lattice1D<LatticeNormal, Perlin>>.ScheduleParallel,
+            SurfaceJob<Lattice2D<LatticeNormal, Perlin>>.ScheduleParallel,
+            SurfaceJob<Lattice3D<LatticeNormal, Perlin>>.ScheduleParallel
+        },      
+        {
+            SurfaceJob<Lattice1D<LatticeNormal, Smoothstep<Turbulence<Perlin>>>>.ScheduleParallel,
+            SurfaceJob<Lattice2D<LatticeNormal, Smoothstep<Turbulence<Perlin>>>>.ScheduleParallel,
+            SurfaceJob<Lattice3D<LatticeNormal, Smoothstep<Turbulence<Perlin>>>>.ScheduleParallel
+        },
+        {
+            SurfaceJob<Lattice1D<LatticeNormal, Value>>.ScheduleParallel,
+            SurfaceJob<Lattice2D<LatticeNormal, Value>>.ScheduleParallel,
+            SurfaceJob<Lattice3D<LatticeNormal, Value>>.ScheduleParallel
+        },
+
+        {
             SurfaceJob<Simplex1D<Simplex>>.ScheduleParallel,
             SurfaceJob<Simplex2D<Simplex>>.ScheduleParallel,
             SurfaceJob<Simplex3D<Simplex>>.ScheduleParallel
@@ -46,14 +63,131 @@ public class ProceduralSurface : MonoBehaviour
             SurfaceJob<Simplex1D<Value>>.ScheduleParallel,
             SurfaceJob<Simplex2D<Value>>.ScheduleParallel,
             SurfaceJob<Simplex3D<Value>>.ScheduleParallel
+        },
+        {
+            SurfaceJob<Voronoi1D<LatticeNormal, Worley, F1>>.ScheduleParallel,
+            SurfaceJob<Voronoi2D<LatticeNormal, Worley, F1>>.ScheduleParallel,
+            SurfaceJob<Voronoi3D<LatticeNormal, Worley, F1>>.ScheduleParallel
+        },
+        {
+            SurfaceJob<Voronoi1D<LatticeNormal, Worley, F2>>.ScheduleParallel,
+            SurfaceJob<Voronoi2D<LatticeNormal, Worley, F2>>.ScheduleParallel,
+            SurfaceJob<Voronoi3D<LatticeNormal, Worley, F2>>.ScheduleParallel
+        },
+        {
+            SurfaceJob<Voronoi1D<LatticeNormal, Worley, F2MinusF1>>.ScheduleParallel,
+            SurfaceJob<Voronoi2D<LatticeNormal, Worley, F2MinusF1>>.ScheduleParallel,
+            SurfaceJob<Voronoi3D<LatticeNormal, Worley, F2MinusF1>>.ScheduleParallel
+        },
+        {
+            SurfaceJob<Voronoi1D<LatticeNormal, SmoothWorley, F1>>.ScheduleParallel,
+            SurfaceJob<Voronoi2D<LatticeNormal, SmoothWorley, F1>>.ScheduleParallel,
+            SurfaceJob<Voronoi3D<LatticeNormal, SmoothWorley, F1>>.ScheduleParallel
+        },      
+        {
+            SurfaceJob<Voronoi1D<LatticeNormal, SmoothWorley, F2>>.ScheduleParallel,
+            SurfaceJob<Voronoi2D<LatticeNormal, SmoothWorley, F2>>.ScheduleParallel,
+            SurfaceJob<Voronoi3D<LatticeNormal, SmoothWorley, F2>>.ScheduleParallel
+        },
+        {
+            SurfaceJob<Voronoi1D<LatticeNormal, Worley, F1>>.ScheduleParallel,
+            SurfaceJob<Voronoi2D<LatticeNormal, Chebyshev, F1>>.ScheduleParallel,
+            SurfaceJob<Voronoi3D<LatticeNormal, Chebyshev, F1>>.ScheduleParallel
+        },
+        {
+            SurfaceJob<Voronoi1D<LatticeNormal, Worley, F2>>.ScheduleParallel,
+            SurfaceJob<Voronoi2D<LatticeNormal, Chebyshev, F2>>.ScheduleParallel,
+            SurfaceJob<Voronoi3D<LatticeNormal, Chebyshev, F2>>.ScheduleParallel
+        },
+        {
+            SurfaceJob<Voronoi1D<LatticeNormal, Worley, F2MinusF1>>.ScheduleParallel,
+            SurfaceJob<Voronoi2D<LatticeNormal, Chebyshev, F2MinusF1>>.ScheduleParallel,
+            SurfaceJob<Voronoi3D<LatticeNormal, Chebyshev, F2MinusF1>>.ScheduleParallel
+        }
+    };
+
+    static FlowJobScheduleDelegate[,] flowJobs = {
+        {
+            FlowJob<Lattice1D<LatticeNormal, Perlin>>.ScheduleParallel,
+            FlowJob<Lattice2D<LatticeNormal, Perlin>>.ScheduleParallel,
+            FlowJob<Lattice3D<LatticeNormal, Perlin>>.ScheduleParallel
+        },
+        {
+            FlowJob<Lattice1D<LatticeNormal, Smoothstep<Turbulence<Perlin>>>>.ScheduleParallel,
+            FlowJob<Lattice2D<LatticeNormal, Smoothstep<Turbulence<Perlin>>>>.ScheduleParallel,
+            FlowJob<Lattice3D<LatticeNormal, Smoothstep<Turbulence<Perlin>>>>.ScheduleParallel
+        },
+        {
+            FlowJob<Lattice1D<LatticeNormal, Value>>.ScheduleParallel,
+            FlowJob<Lattice2D<LatticeNormal, Value>>.ScheduleParallel,
+            FlowJob<Lattice3D<LatticeNormal, Value>>.ScheduleParallel
+        },
+
+        {
+            FlowJob<Simplex1D<Simplex>>.ScheduleParallel,
+            FlowJob<Simplex2D<Simplex>>.ScheduleParallel,
+            FlowJob<Simplex3D<Simplex>>.ScheduleParallel
+        },
+        {
+            FlowJob<Simplex1D<Smoothstep<Turbulence<Simplex>>>>.ScheduleParallel,
+            FlowJob<Simplex2D<Smoothstep<Turbulence<Simplex>>>>.ScheduleParallel,
+            FlowJob<Simplex3D<Smoothstep<Turbulence<Simplex>>>>.ScheduleParallel
+        },
+        {
+            FlowJob<Simplex1D<Value>>.ScheduleParallel,
+            FlowJob<Simplex2D<Value>>.ScheduleParallel,
+            FlowJob<Simplex3D<Value>>.ScheduleParallel
+        },
+        {
+            FlowJob<Voronoi1D<LatticeNormal, Worley, F1>>.ScheduleParallel,
+            FlowJob<Voronoi2D<LatticeNormal, Worley, F1>>.ScheduleParallel,
+            FlowJob<Voronoi3D<LatticeNormal, Worley, F1>>.ScheduleParallel
+        },
+        {
+            FlowJob<Voronoi1D<LatticeNormal, Worley, F2>>.ScheduleParallel,
+            FlowJob<Voronoi2D<LatticeNormal, Worley, F2>>.ScheduleParallel,
+            FlowJob<Voronoi3D<LatticeNormal, Worley, F2>>.ScheduleParallel
+        },
+        {
+            FlowJob<Voronoi1D<LatticeNormal, Worley, F2MinusF1>>.ScheduleParallel,
+            FlowJob<Voronoi2D<LatticeNormal, Worley, F2MinusF1>>.ScheduleParallel,
+            FlowJob<Voronoi3D<LatticeNormal, Worley, F2MinusF1>>.ScheduleParallel
+        },
+        {
+            FlowJob<Voronoi1D<LatticeNormal, SmoothWorley, F1>>.ScheduleParallel,
+            FlowJob<Voronoi2D<LatticeNormal, SmoothWorley, F1>>.ScheduleParallel,
+            FlowJob<Voronoi3D<LatticeNormal, SmoothWorley, F1>>.ScheduleParallel
+        },
+        {
+            FlowJob<Voronoi1D<LatticeNormal, SmoothWorley, F2>>.ScheduleParallel,
+            FlowJob<Voronoi2D<LatticeNormal, SmoothWorley, F2>>.ScheduleParallel,
+            FlowJob<Voronoi3D<LatticeNormal, SmoothWorley, F2>>.ScheduleParallel
+        },
+        {
+            FlowJob<Voronoi1D<LatticeNormal, Worley, F1>>.ScheduleParallel,
+            FlowJob<Voronoi2D<LatticeNormal, Chebyshev, F1>>.ScheduleParallel,
+            FlowJob<Voronoi3D<LatticeNormal, Chebyshev, F1>>.ScheduleParallel
+        },
+        {
+            FlowJob<Voronoi1D<LatticeNormal, Worley, F2>>.ScheduleParallel,
+            FlowJob<Voronoi2D<LatticeNormal, Chebyshev, F2>>.ScheduleParallel,
+            FlowJob<Voronoi3D<LatticeNormal, Chebyshev, F2>>.ScheduleParallel
+        },
+        {
+            FlowJob<Voronoi1D<LatticeNormal, Worley, F2MinusF1>>.ScheduleParallel,
+            FlowJob<Voronoi2D<LatticeNormal, Chebyshev, F2MinusF1>>.ScheduleParallel,
+            FlowJob<Voronoi3D<LatticeNormal, Chebyshev, F2MinusF1>>.ScheduleParallel
         }
     };
 
     public enum NoiseType
     {
-        Simplex, SimplexSmoothTurbulence, SimplexValue
+        Perlin, PerlinSmoothTurbulence, PerlinValue,
+        Simplex, SimplexSmoothTurbulence, SimplexValue,
+        VoronoiWorleyF1, VoronoiWorleyF2, VoronoiWorleyF2MinusF1, 
+        VoronoiWorleySmoothLSE, VoronoiWorleySmoothPoly,
+        VoronoiChebyshevF1, VoronoiChebyshevF2, VoronoiChebyshevF2MinusF1
     }
-
     [SerializeField]
     NoiseType noiseType;
 
@@ -115,13 +249,28 @@ public class ProceduralSurface : MonoBehaviour
     [System.NonSerialized]
     int[] triangles;
 
+    ParticleSystem flowSystem;
+
+    bool IsPlane => meshType < MeshType.CubeSphere;
+
+
+    static int materialIsPlaneId = Shader.PropertyToID("_IsPlane");
+
+    public enum FlowMode { Off, Curl, Downhill }
+
+    [SerializeField]
+    FlowMode flowMode;
+
     void Awake()
     {
+        flowSystem = GetComponent<ParticleSystem>();
+
         mesh = new Mesh
         {
             name = "Procedural Mesh"
         };
         GetComponent<MeshFilter>().mesh = mesh;
+        materials[(int)displacement] = new Material(materials[(int)displacement]);
     }
 
     void OnDrawGizmos()
@@ -201,6 +350,17 @@ public class ProceduralSurface : MonoBehaviour
         }
     }
 
+    void OnParticleUpdateJobScheduled()
+    {
+        if (flowMode != FlowMode.Off)
+        {
+            flowJobs[(int)noiseType, dimensions - 1](
+                flowSystem, noiseSettings, domain, displacement,
+                IsPlane, flowMode == FlowMode.Curl
+            );
+        }
+    }
+
     void OnValidate() => enabled = true;
 
     void Update()
@@ -212,8 +372,25 @@ public class ProceduralSurface : MonoBehaviour
         normals = null;
         tangents = null;
         triangles = null;
+        if (material == MaterialMode.Displacement)
+        {
+            materials[(int)MaterialMode.Displacement].SetFloat(
+                materialIsPlaneId, IsPlane ? 1f : 0f
+            );
+        }
 
         GetComponent<MeshRenderer>().material = materials[(int)material];
+        if (flowMode == FlowMode.Off)
+        {
+            flowSystem.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        }
+        else
+        {
+            flowSystem.Play();
+            ParticleSystem.ShapeModule shapeModule = flowSystem.shape;
+            shapeModule.shapeType = IsPlane ?
+                ParticleSystemShapeType.Rectangle : ParticleSystemShapeType.Sphere;
+        }
     }
 
     void GenerateMesh()
@@ -222,10 +399,10 @@ public class ProceduralSurface : MonoBehaviour
         Mesh.MeshData meshData = meshDataArray[0];
 
         surfaceJobs[(int)noiseType, dimensions - 1](
-            meshData, resolution, noiseSettings, domain, displacement,
+            meshData, resolution, noiseSettings, domain, displacement, IsPlane,
             meshJobs[(int)meshType](
                 mesh, meshData, resolution, default,
-                new Vector3(0f, Mathf.Abs(displacement)), true
+                Vector3.one * Mathf.Abs(displacement), true
             )
         ).Complete();
 

@@ -19,7 +19,7 @@ public static partial class Noise
     {
         public int4 p0, p1;
         public float4 g0, g1;
-        public float4 t;
+        public float4 t, dt;
 
         public struct LatticeNormal : ILattice
         {
@@ -35,6 +35,9 @@ public static partial class Noise
                 span.t = span.t * span.t * span.t * (span.t * (span.t * 6f - 15f) + 10f);
                 span.g0 = coordinates - span.p0;
                 span.g1 = span.g0 - 1f;
+                float4 t = coordinates - points;
+                span.t = t * t * t * (t * (t * 6f - 15f) + 10f);
+                span.dt = t * t * (t * (t * 30f - 60f) + 30f);
                 return span;
             }
 
@@ -61,6 +64,9 @@ public static partial class Noise
 
                 span.t = coordinates - points;
                 span.t = span.t * span.t * span.t * (span.t * (span.t * 6f - 15f) + 10f);
+                float4 t = coordinates - points;
+                span.t = t * t * t * (t * (t * 6f - 15f) + 10f);
+                span.dt = t * t * (t * (t * 30f - 60f) + 30f);
                 return span;
             }
 

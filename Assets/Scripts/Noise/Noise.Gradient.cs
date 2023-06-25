@@ -86,16 +86,8 @@ public static partial class Noise
         public Sample4 Evaluate(SmallXXHash4 hash, float4 x, float4 y, float4 z) =>
             default(G).Evaluate(hash, x, y, z);
 
-        public Sample4 EvaluateAfterInterpolation(Sample4 value)
-        {
-            Sample4 s = default(G).EvaluateAfterInterpolation(value);
-            float4 d = 6f * s.v * (1f - s.v);
-            s.dx *= d;
-            s.dy *= d;
-            s.dz *= d;
-            s.v *= s.v * (3f - 2f * s.v);
-            return s;
-        }
+        public Sample4 EvaluateAfterInterpolation(Sample4 value) =>
+            default(G).EvaluateAfterInterpolation(value).Smoothstep;
     }
 
     public struct Turbulence<G> : IGradient where G : struct, IGradient
@@ -149,12 +141,16 @@ public static partial class Noise
                 dx = l
             };
         }
-        public static float4 Square(SmallXXHash4 hash, float4 x, float4 y)
+        public static Sample4 Square(SmallXXHash4 hash, float4 x, float4 y)
         {
             float4x2 v = SquareVectors(hash);
-            return v.c0 * x + v.c1 * y;
+            return new Sample4
+            {
+                v = v.c0 * x + v.c1 * y,
+                dx = v.c0,
+                dz = v.c1
+            };
         }
-
         public static Sample4 Circle(SmallXXHash4 hash, float4 x, float4 y)
         {
             float4x2 v = SquareVectors(hash);
@@ -166,12 +162,18 @@ public static partial class Noise
             } * rsqrt(v.c0 * v.c0 + v.c1 * v.c1);
         }
 
-        public static float4 Octahedron(
+        public static Sample4 Octahedron(
             SmallXXHash4 hash, float4 x, float4 y, float4 z
         )
         {
             float4x3 v = OctahedronVectors(hash);
-            return v.c0 * x + v.c1 * y + v.c2 * z;
+            return new Sample4
+            {
+                v = v.c0 * x + v.c1 * y + v.c2 * z,
+                dx = v.c0,
+                dy = v.c1,
+                dz = v.c2
+            };
         }
 
         public static Sample4 Sphere(SmallXXHash4 hash, float4 x, float4 y, float4 z)
