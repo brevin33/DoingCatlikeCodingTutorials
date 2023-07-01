@@ -15,9 +15,6 @@ public class MovingSphere : MonoBehaviour {
     [SerializeField, Range(0f, 100f)]
     float maxAcceleration = 10f, maxAirAcceleration = 1f;
 
-    [SerializeField, Range(0f, 90f)]
-    float maxGroundAngle = 25f;
-
     [SerializeField, Range(0f, 100f)]
     float maxSnapSpeed = 100f;
 
@@ -48,9 +45,6 @@ public class MovingSphere : MonoBehaviour {
     Vector3 contactNormal;
 
     int stepsSinceLastGrounded, stepsSinceLastJump;
-
-
-    bool OnSteep => steepContactCount > 0;
 
 
 
@@ -193,7 +187,8 @@ public class MovingSphere : MonoBehaviour {
 
     float GetMinDot(int layer)
     {
-        return (stairsMask & (1 << layer)) == 0 ?
+        return stairsMask != layer ?
+            minGroundDotProduct : minStairsDotProduct;
     }
 
     void UpdateState()
