@@ -1679,7 +1679,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6322364174813108530, guid: c73c4707f190f4240b7d6dfb3a46094c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.2
+      value: 0.69
       objectReference: {fileID: 0}
     - target: {fileID: 6322364174813108530, guid: c73c4707f190f4240b7d6dfb3a46094c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1724,6 +1724,10 @@ PrefabInstance:
     - target: {fileID: 6322364174813108535, guid: c73c4707f190f4240b7d6dfb3a46094c, type: 3}
       propertyPath: probeMask.m_Bits
       value: 1203
+      objectReference: {fileID: 0}
+    - target: {fileID: 6322364174813108541, guid: c73c4707f190f4240b7d6dfb3a46094c, type: 3}
+      propertyPath: m_Interpolate
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c73c4707f190f4240b7d6dfb3a46094c, type: 3}
@@ -2749,14 +2753,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.5, y: 0, z: 0, w: 0.8660254}
-  m_LocalPosition: {x: 17, y: 27, z: -14}
+  m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
+  m_LocalPosition: {x: 0, y: 4.73, z: -3.54}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 23
-  m_LocalEulerAnglesHint: {x: 60, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 45, y: 0, z: 0}
 --- !u!114 &963194229
 MonoBehaviour:
   m_ObjectHideFlags: 0
