@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 6322364174813108534}
   - component: {fileID: 6322364174813108535}
   - component: {fileID: 6322364174813108541}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -217,6 +217,11 @@ MonoBehaviour:
   maxAcceleration: 60
   maxAirAcceleration: 40
   maxGroundAngle: 70
+  maxSnapSpeed: 100
+  probeDistance: 1
+  probeMask:
+    serializedVersion: 2
+    m_Bits: 179
 --- !u!54 &6322364174813108541
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -18,7 +18,17 @@ public class MovingSphere : MonoBehaviour {
     [SerializeField, Range(0f, 90f)]
     float maxGroundAngle = 25f;
 
+    [SerializeField, Range(0f, 100f)]
+    float maxSnapSpeed = 100f;
 
+    [SerializeField, Min(0f)]
+    float probeDistance = 1f;
+
+    [SerializeField]
+    LayerMask probeMask = -1, stairsMask = -1;
+
+    [SerializeField, Range(0, 90)]
+    float maxGroundAngle = 25f, maxStairsAngle = 50f;
 
 
     Vector3 velocity;
@@ -33,11 +43,17 @@ public class MovingSphere : MonoBehaviour {
 
     int jumpPhase;
 
-    float minGroundDotProduct;
+    float minGroundDotProduct, minStairsDotProduct;
 
     Vector3 contactNormal;
 
-    int stepsSinceLastGrounded;
+    int stepsSinceLastGrounded, stepsSinceLastJump;
+
+
+    bool OnSteep => steepContactCount > 0;
+
+
+
 
 
 
@@ -50,6 +66,7 @@ public class MovingSphere : MonoBehaviour {
     void OnValidate()
     {
         minGroundDotProduct = Mathf.Cos(maxGroundAngle * Mathf.Deg2Rad);
+        minStairsDotProduct = Mathf.Cos(maxStairsAngle * Mathf.Deg2Rad);
     }
 
 
@@ -61,10 +78,6 @@ public class MovingSphere : MonoBehaviour {
         playerInput.y = Input.GetAxis("Vertical");
         desiredVelocity = new Vector3(playerInput.x, 0f, playerInput.y) * maxSpeed;
         desiredJump |= Input.GetButtonDown("Jump");
-
-        GetComponent<Renderer>().material.SetColor(
-            "_Color", OnGround ? Color.black : Color.white
-        );
     }
 
     void FixedUpdate()
@@ -142,6 +155,7 @@ public class MovingSphere : MonoBehaviour {
     {
         if (onGround || jumpPhase < maxAirJumps)
         {
+            stepsSinceLastJump = 0;
             jumpPhase += 1;
             float jumpSpeed = Mathf.Sqrt(-2f * Physics.gravity.y * jumpHeight);
             if (velocity.y > 0f)
@@ -154,30 +168,41 @@ public class MovingSphere : MonoBehaviour {
 
     bool SnapToGround()
     {
-        if (stepsSinceLastGrounded > 1)
+        if (stepsSinceLastGrounded > 1 || stepsSinceLastJump <= 2)
         {
             return false;
         }
-        if (!Physics.Raycast(body.position, Vector3.down, out RaycastHit hit))
+        float speed = velocity.magnitude;
+        if (speed > maxSnapSpeed)
         {
             return false;
         }
-        if (hit.normal.y < minGroundDotProduct)
+        if (!Physics.Raycast(body.position, Vector3.down, out RaycastHit hit, probeDistance, probeMask))
+        {
+            return false;
+        }
+        if (hit.normal.y < GetMinDot(hit.collider.gameObject.layer))
         {
             return false;
         }
         contactNormal = hit.normal;
-        float speed = velocity.magnitude;
         float dot = Vector3.Dot(velocity, hit.normal);
         velocity = (velocity - hit.normal * dot).normalized * speed;
         return true;
+    }
+
+    float GetMinDot(int layer)
+    {
+        return (stairsMask & (1 << layer)) == 0 ?
     }
 
     void UpdateState()
     {
         stepsSinceLastGrounded += 1;
         velocity = body.velocity;
-        if (OnGround || SnapToGround())
+        stepsSinceLastJump += 1;
+
+        if (onGround || SnapToGround())
         {
 
             stepsSinceLastGrounded = 0;
