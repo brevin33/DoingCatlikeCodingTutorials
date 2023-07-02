@@ -287,6 +287,11 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!4 &43875169 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6322364174813108530, guid: c73c4707f190f4240b7d6dfb3a46094c, type: 3}
+  m_PrefabInstance: {fileID: 677281116}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &78481925
 GameObject:
   m_ObjectHideFlags: 0
@@ -1722,6 +1727,10 @@ PrefabInstance:
       value: 4.5
       objectReference: {fileID: 0}
     - target: {fileID: 6322364174813108535, guid: c73c4707f190f4240b7d6dfb3a46094c, type: 3}
+      propertyPath: playerInputSpace
+      value: 
+      objectReference: {fileID: 963194228}
+    - target: {fileID: 6322364174813108535, guid: c73c4707f190f4240b7d6dfb3a46094c, type: 3}
       propertyPath: probeMask.m_Bits
       value: 1203
       objectReference: {fileID: 0}
@@ -2688,6 +2697,7 @@ GameObject:
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
   - component: {fileID: 963194229}
+  - component: {fileID: 963194230}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -2794,6 +2804,30 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
+--- !u!114 &963194230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef6c6057aeae50c4aadbe91d7120ce86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  focus: {fileID: 43875169}
+  distance: 5
+  focusRadius: 1
+  focusCentering: 0.5
+  rotationSpeed: 90
+  minVerticalAngle: -30
+  maxVerticalAngle: 60
+  alignDelay: 5
+  alignSmoothRange: 45
+  obstructionMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!43 &977933073
 Mesh:
   m_ObjectHideFlags: 0
