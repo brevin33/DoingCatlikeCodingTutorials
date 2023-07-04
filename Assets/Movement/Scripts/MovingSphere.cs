@@ -155,9 +155,9 @@ public class MovingSphere : MonoBehaviour
     {
         if (connectedBody == previousConnectedBody)
         {
-            Vector3 connectionMovement =
-                connectedBody.transform.TransformPoint(connectionLocalPosition) -
-                connectionWorldPosition;
+			Vector3 connectionMovement =
+				connectedBody.transform.TransformPoint(connectionLocalPosition) -
+				connectionWorldPosition;
         }
         connectionWorldPosition = body.position;
         connectionLocalPosition = connectedBody.transform.InverseTransformPoint(
