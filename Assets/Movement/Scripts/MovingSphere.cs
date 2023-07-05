@@ -530,4 +530,9 @@ public class MovingSphere : MonoBehaviour
         return (stairsMask & (1 << layer)) == 0 ?
             minGroundDotProduct : minStairsDotProduct;
     }
+
+    public void PreventSnapToGround()
+    {
+        stepsSinceLastJump = -1;
+    }
 }
