@@ -213,8 +213,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerInputSpace: {fileID: 0}
   maxSpeed: 10
+  maxClimbSpeed: 2
+  maxSwimSpeed: 5
   maxAcceleration: 60
   maxAirAcceleration: 40
+  maxClimbAcceleration: 20
+  maxSwimAcceleration: 5
   jumpHeight: 10
   maxAirJumps: 1
   maxGroundAngle: 70
@@ -222,8 +226,14 @@ MonoBehaviour:
   maxSnapSpeed: 100
   probeDistance: 1
   maxClimbAngle: 140
+  submergenceOffset: 0.5
+  submergenceRange: 1
+  waterDrag: 1
+  buoyancy: 1
+  swimThreshold: 0.5
   normalMaterial: {fileID: 2100000, guid: 694797821db028e489dde60a48fdb4e4, type: 2}
   climbingMaterial: {fileID: 2100000, guid: 22793a889fe912a4f83115ba5d6e6fc7, type: 2}
+  swimmingMaterial: {fileID: 2100000, guid: 4652fa7911a60f9429031c8e7825bd87, type: 2}
   probeMask:
     serializedVersion: 2
     m_Bits: 179
@@ -233,6 +243,9 @@ MonoBehaviour:
   climbMask:
     serializedVersion: 2
     m_Bits: 1459
+  waterMask:
+    serializedVersion: 2
+    m_Bits: 4112
 --- !u!54 &6322364174813108541
 Rigidbody:
   m_ObjectHideFlags: 0
