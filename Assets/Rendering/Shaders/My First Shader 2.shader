@@ -2,6 +2,8 @@
 
 // Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "Custom/My First Lighting Shader" {
 
 	Properties{
@@ -38,7 +40,7 @@ Shader "Custom/My First Lighting Shader" {
 
 				Interpolators MyVertexProgram(VertexData v) {
 					Interpolators i;
-					i.position = mul(UNITY_MATRIX_MVP, v.position);
+					i.position = UnityObjectToClipPos(v.position);
 					i.normal = UnityObjectToWorldNormal(v.normal);
 					i.uv = TRANSFORM_TEX(v.uv, _MainTex);
 					return i;

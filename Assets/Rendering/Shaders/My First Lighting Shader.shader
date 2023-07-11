@@ -4,6 +4,8 @@
 
 // Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
 
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
 Shader "Custom/My First Lighting Shader" {
 
 	Properties{
@@ -52,7 +54,7 @@ Shader "Custom/My First Lighting Shader" {
 
 			Interpolators MyVertexProgram(VertexData v) {
 				Interpolators i;
-				i.position = mul(UNITY_MATRIX_MVP, v.position);
+				i.position = UnityObjectToClipPos(v.position);
 				i.worldPos = mul(unity_ObjectToWorld, v.position);
 				i.normal = UnityObjectToWorldNormal(v.normal);
 				i.uv = TRANSFORM_TEX(v.uv, _MainTex);
@@ -65,8 +67,10 @@ Shader "Custom/My First Lighting Shader" {
 				float3 viewDir = normalize(_WorldSpaceCameraPos - i.worldPos);
 
 				float3 lightColor = _LightColor0.rgb;
-				float3 specularTint; 
-				float oneMinusReflectivity; 
+				float3 albedo = tex2D(_MainTex, i.uv).rgb * _Tint.rgb;
+
+				float3 specularTint;
+				float oneMinusReflectivity;
 				albedo = DiffuseAndSpecularFromMetallic(
 					albedo, _Metallic, specularTint, oneMinusReflectivity
 				);
@@ -85,7 +89,6 @@ Shader "Custom/My First Lighting Shader" {
 					i.normal, viewDir,
 					light, indirectLight
 				);
-
 			}
 
 			ENDCG
